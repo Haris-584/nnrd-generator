@@ -45,24 +45,6 @@ jobs:
         id: sanitize
         run: echo "username=$(echo '${{ secrets.DOCKER_HUB_USERNAME }}' | xargs)" >> $GITHUB_OUTPUT
 
-      - name: 'Configure Azure App Service for Containers'
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          app-settings-json: |
-            [
-              {
-                "name": "DOCKER_REGISTRY_SERVER_URL",
-                "value": "https://index.docker.io/v1/",
-                "slotSetting": false
-              }
-            ]
-          general-settings-json: |
-            {
-              "linuxFxVersion": "DOCKER|${{ steps.sanitize.outputs.username }}/nnrd-generator:${{ github.sha }}"
-            }
-
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:

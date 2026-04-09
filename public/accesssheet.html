@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access Sheet Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --bg: #f8fafc;
+      --surface: rgba(255, 255, 255, 0.85);
+      --border: rgba(99, 102, 241, 0.2);
+      --text: #1e293b;
+      --text-light: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #e0e7ff, #f8fafc);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar a {
+      text-decoration: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .container {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 2rem;
+    }
+
+    /* GLASS CARD FORM */
+    .glass-card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-light);
+      margin-bottom: 0.25rem;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.9);
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-success:hover {
+      background: #0ea5e9; /* Shift to Azure Blue */
+      transform: translateY(-2px);
+    }
+
+    /* TABLE LAYOUT */
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-light);
+      font-weight: 600;
+      text-align: left;
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-granted { background: #dcfce7; color: #166534; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+
+    .header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .del-btn {
+      color: #ef4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .del-btn:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Home
+    </a>
+    <div style="font-weight: 600; color: #64748b;">Access Sheet Generator</div>
+  </nav>
+
+  <div class="container">
+    
+    <!-- LEFT PANEL: ADD MEMBER -->
+    <div class="glass-card">
+      <div class="card-title">
+        <span style="font-size: 1.5rem">👤</span> Add Member
+      </div>
+      
+      <!-- PROJECT-LEVEL FIELDS (shared across all members) -->
+      <div class="form-group" style="margin-bottom: 1.25rem;">
+        <label style="font-size: 0.85rem; font-weight: 500; color: #64748b;">Project Name</label>
+        <input type="text" id="project-name" placeholder="e.g., My Project" style="width:100%; padding:0.6rem 0.75rem; border:1px solid #cbd5e1; border-radius:8px; font-size:0.95rem; outline:none; background:rgba(255,255,255,0.9);">
+      </div>
+
+      <hr style="border:0; border-top:1px solid rgba(0,0,0,0.08); margin-bottom:1.25rem;">
+
+      <form id="add-member-form">
+        <!-- Basic Info -->
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="m-name" required placeholder="e.g., John Doe">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="m-email" required placeholder="name@applab.qa">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <div class="form-group">
+            <label>Organization</label>
+            <input type="text" id="m-org" required value="Applab">
+          </div>
+          <div class="form-group">
+            <label>Team</label>
+            <select id="m-team">
+              <option value="Cloud and DevOps Team">Cloud & DevOps</option>
+              <option value="Development Team">Development</option>
+              <option value="AI Team">AI Team</option>
+              <option value="Data Team">Data Team</option>
+              <option value="Business Team">Business Team</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+          <div class="form-group">
+            <label>Status</label>
+            <select id="m-status">
+              <option value="Pending">Pending</option>
+              <option value="Granted">Granted</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="text" id="m-date" required>
+          </div>
+        </div>
+
+        <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin: 1rem 0;">
+
+        <!-- Cloud Access -->
+        <div class="card-title" style="font-size: 0.95rem; color: #4F46E5;">☁️ Cloud Access Default</div>
+        <div class="form-group">
+          <select id="m-cloud-role">
+            <option value="Reader">Reader</option>
+            <option value="Contributor" selected>Contributor</option>
+            <option value="Owner">Owner</option>
+          </select>
+        </div>
+
+        <!-- DevOps Access -->
+        <div class="card-title" style="font-size: 0.95rem; color: #4F46E5;">⚙️ DevOps Role (auto-assigned)</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem;">Cloud &amp; DevOps → Administrator &nbsp;|&nbsp; Others → Contributor</div>
+
+        <button type="submit" class="btn-primary" style="margin-top: 0.5rem;">+ Add Member</button>
+      </form>
+    </div>
+
+    <!-- RIGHT PANEL: LIST & EXPORT -->
+    <div style="display: flex; flex-direction: column;">
+      <div class="header-actions">
+        <h2 style="font-size: 1.5rem; color: #0f172a;">Active Project Members</h2>
+        <button id="generate-excel-btn" class="btn-success">Download Access Excel</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Name / Email</th>
+              <th>Team / Org</th>
+              <th>Status</th>
+              <th>Cloud Role (All Env)</th>
+              <th>DevOps Role</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="members-list">
+            <!-- Dynamic rows injected here via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app-access.js"></script>
+</body>
+</html>

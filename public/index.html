@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure Platform Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338ca;
+      --surface: rgba(255, 255, 255, 0.75);
+      --text: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(-45deg, #e0e7ff, #f3e8ff, #dbeafe, #e2e8f0);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .navbar {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 1rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links img {
+      height: 35px; /* Adjust Applab Logo size if needed */
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+    }
+
+    .header-text {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .header-text h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -1px;
+      margin-bottom: 1rem;
+    }
+    
+    .header-text h1 span {
+      background: -webkit-linear-gradient(45deg, #4F46E5, #9333ea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-text p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 600px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2.5rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .tool-card {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      text-align: center;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 24px 38px 3px rgba(0,0,0,0.02);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4F46E5, #9333ea);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .tool-card:hover::before {
+      opacity: 1;
+    }
+
+    .icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: rgba(79, 70, 229, 0.1);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem auto;
+      font-size: 2.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .tool-card:hover .icon-wrapper {
+      transform: scale(1.1) rotate(5deg);
+      background: rgba(79, 70, 229, 0.15);
+    }
+
+    .tool-card h2 {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+      color: #0f172a;
+    }
+
+    .tool-card p {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .btn-action {
+      display: inline-block;
+      margin-top: 2rem;
+      padding: 0.75rem 2rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .tool-card:hover .btn-action {
+      background: var(--primary-hover);
+    }
+
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="/" class="nav-brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Azure Toolkit
+    </a>
+    <div class="nav-links">
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header-text">
+      <h1>Deploy with <span>Precision</span>.</h1>
+      <p>Select a module to generate automated infrastructure templates, standardized documentation, and access pipelines.</p>
+    </div>
+
+    <div class="cards-grid">
+      <!-- NNRD Generator -->
+      <a href="/nnrd" class="tool-card">
+        <div class="icon-wrapper">
+          🏗️
+        </div>
+        <h2>NNRD Generator</h2>
+        <p>Design Hub/Spoke networking topologies and automatically generate Naming & Network Requirements Excel documentation.</p>
+        <div class="btn-action">Launch NNRD</div>
+      </a>
+
+      <!-- Access Sheet Generator -->
+      <a href="/accesssheet" class="tool-card">
+        <div class="icon-wrapper">
+          🔐
+        </div>
+        <h2>Access Sheet Generator</h2>
+        <p>Define project members, compile cloud roles, and instantly generate the structured Azure Access Sheets for DevOps & Entra ID.</p>
+        <div class="btn-action">Launch Access</div>
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>

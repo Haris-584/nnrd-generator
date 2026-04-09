@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NNRD Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <nav class="navbar" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(99, 102, 241, 0.2); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; margin: -2rem -2rem 2rem -2rem;">
+    <a href="/" style="text-decoration: none; color: #6366f1; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Home
+    </a>
+    <div style="font-weight: 600; color: #64748b;">NNRD Generator</div>
+  </nav>
+
+  <div class="container" style="margin-top: 2rem;">
+    <header>
+      <h1>NNRD Generator</h1>
+      <p>Generate standardized Azure naming documents</p>
+    </header>
+
+    <form id="nnrd-form">
+      <!-- Project Details -->
+      <section class="form-section">
+        <h3>Project Details</h3>
+        <div class="form-grid">
+          <div>
+            <label>Project Name:</label>
+            <input type="text" name="project" placeholder="Name" required />
+          </div>
+          <div>
+            <label>Primary Region (PR):</label>
+            <select name="region" required>
+              <option value="">Select Region</option>
+              <option value="Qatar Central">Qatar Central</option>
+              <option value="Sweden Central">Sweden Central</option>
+              <option value="West Europe">West Europe</option>
+              <option value="UAE North">UAE North</option>
+            </select>
+          </div>
+          <div>
+            <label>Disaster Recovery (DR):</label>
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+              <input type="checkbox" id="enable-dr" name="enable_dr" style="margin: 0; width: 14px; height: 14px;" />
+              <span style="font-size: 14px; font-weight: 500;">Enable DR</span>
+            </div>
+            <select name="dr_region" id="dr-region" disabled>
+              <option value="">Select DR Region</option>
+              <option value="Qatar Central">Qatar Central</option>
+              <option value="Sweden Central">Sweden Central</option>
+              <option value="West Europe">West Europe</option>
+              <option value="UAE North">UAE North</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Environment Selection -->
+      <section class="form-section">
+        <h3>Select Environments</h3>
+        <div class="checkbox-inline" id="env-checkboxes">
+          <label><input type="checkbox" name="environments" value="Hub" /> Hub</label>
+          <label><input type="checkbox" name="environments" value="Development" /> Development</label>
+          <label><input type="checkbox" name="environments" value="Staging" /> Staging</label>
+          <label><input type="checkbox" name="environments" value="Production" checked /> Production</label>
+        </div>
+      </section>
+
+      <!-- Select Spoke Resources -->
+      <section class="form-section">
+        <h3>Select Spoke Resources (Dev, Stg, Prod)</h3>
+        <div class="resource-selection">
+          <div class="search-container">
+            <input type="text" id="spoke-resource-search" class="resource-search-input" placeholder="🔍 Search resource type..." />
+          </div>
+          <div class="resource-picker">
+            <select id="spoke-resource-type-select" class="resource-dropdown">
+              <option value="">-- Select Resource Type --</option>
+              <optgroup label="Compute">
+                <option value="Virtual Machine">Virtual Machine</option>
+                <option value="VM Jump Server">VM Jump Server</option>
+                <option value="VM Self-Hosted Agent">VM Self-Hosted Agent</option>
+                <option value="Windows Virtual Desktop">Windows Virtual Desktop</option>
+                <option value="VM Scale Set">VM Scale Set</option>
+                <option value="App Service">App Service</option>
+                <option value="Static Web App">Static Web App</option>
+                <option value="Function App">Function App</option>
+                <option value="Azure Kubernetes Service">Azure Kubernetes Service (AKS)</option>
+                <option value="Azure Container Registry">Azure Container Registry</option>
+                <option value="Container Instances">Container Instances</option>
+              </optgroup>
+              <optgroup label="Database & Storage">
+                <option value="Azure SQL Database">Azure SQL Database</option>
+                <option value="Azure SQL Managed Instance">Azure SQL Managed Instance</option>
+                <option value="MySQL Database">MySQL Database</option>
+                <option value="PostgreSQL Database">PostgreSQL Database</option>
+                <option value="Cosmos DB">Cosmos DB</option>
+                <option value="Redis Cache">Redis Cache</option>
+                <option value="Storage Blob">Storage Account</option>
+              </optgroup>
+              <optgroup label="Networking">
+                <option value="Virtual Network">Virtual Network</option>
+                <option value="Subnet">Subnet</option>
+                <option value="Network Security Group">Network Security Group (NSG)</option>
+                <option value="Public IP">Public IP</option>
+                <option value="Network Interface">Network Interface (NIC)</option>
+                <option value="Application Gateway">Application Gateway</option>
+                <option value="Azure Front Door">Azure Front Door</option>
+                <option value="Bastion">Bastion</option>
+                <option value="ExpressRoute">ExpressRoute</option>
+                <option value="VPN Gateway">VPN Gateway</option>
+                <option value="Private Endpoint">Private Endpoint</option>
+              </optgroup>
+              <optgroup label="AI & Machine Learning">
+                <option value="AI Search">AI Search</option>
+                <option value="OpenAI">OpenAI</option>
+                <option value="Cognitive Services">Cognitive Services</option>
+                <option value="Machine Learning Workspace">Machine Learning Workspace</option>
+                <option value="Bot Function">Bot Function</option>
+              </optgroup>
+              <optgroup label="Data & Analytics">
+                <option value="Data Factory">Data Factory</option>
+                <option value="Databricks">Databricks</option>
+                <option value="Azure Synapse">Azure Synapse Workspace</option>
+                <option value="Event Hubs">Event Hubs</option>
+                <option value="Service Bus">Service Bus</option>
+                <option value="Event Grid">Event Grid</option>
+                <option value="Stream Analytics">Stream Analytics</option>
+              </optgroup>
+              <optgroup label="Management, Security & Monitor">
+                <option value="Key Vault">Key Vault</option>
+                <option value="Log Analytics Workspace">Log Analytics Workspace</option>
+                <option value="Application Insights">Application Insights</option>
+                <option value="APIM">Azure API Management (APIM)</option>
+                <option value="Azure Monitor">Azure Monitor</option>
+              </optgroup>
+            </select>
+            <input type="text" id="spoke-resource-name-input" class="resource-name-input" placeholder="e.g., frontend, backend" />
+            <input type="number" id="spoke-resource-qty-input" class="resource-qty-input" placeholder="Qty" value="1" min="1" max="10" />
+            <button type="button" id="add-spoke-resource-btn" class="btn-secondary">+ Add Resource</button>
+          </div>
+        </div>
+        <div id="selected-spoke-resources" class="selected-resources-list"></div>
+      </section>
+
+      <!-- Select Hub Resources -->
+      <section class="form-section">
+        <h3>Select Hub Resources</h3>
+        <div class="resource-selection">
+          <div class="search-container">
+            <input type="text" id="hub-resource-search" class="resource-search-input" placeholder="🔍 Search hub resource..." />
+          </div>
+          <div class="resource-picker">
+            <select id="hub-resource-type-select" class="resource-dropdown">
+              <option value="">-- Select Hub Resource --</option>
+              <option value="Virtual Machine">Virtual Machine</option>
+              <option value="Azure Container Registry">Azure Container Registry</option>
+              <option value="Key Vault">Key Vault</option>
+              <option value="Azure Front Door">Azure Front Door</option>
+              <option value="Application Gateway">Application Gateway</option>
+              <option value="APIM">Azure API Management (APIM)</option>
+              <option value="Log Analytics Workspace">Log Analytics Workspace</option>
+              <option value="Bastion">Azure Bastion</option>
+            </select>
+            <input type="text" id="hub-resource-name-input" class="resource-name-input" placeholder="e.g., shared, proxy" />
+            <input type="number" id="hub-resource-qty-input" class="resource-qty-input" placeholder="Qty" value="1" min="1" max="10" />
+            <button type="button" id="add-hub-resource-btn" class="btn-secondary">+ Add Resource</button>
+          </div>
+        </div>
+        <div id="selected-hub-resources" class="selected-resources-list"></div>
+      </section>
+
+      <!-- Naming Convention Preview -->
+      <section class="form-section">
+        <h3>Naming Convention Preview</h3>
+        <div class="preview-table-wrapper">
+          <table class="preview-table" id="preview-table">
+            <thead>
+              <tr>
+                <th>Resource Type</th>
+                <th>Resource Group</th>
+                <th>Environment</th>
+                <th>Resource Name</th>
+              </tr>
+            </thead>
+            <tbody id="preview-tbody">
+              <tr>
+                <td colspan="4" class="empty">Select resources to preview naming</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Network Configuration per Environment -->
+      <section class="form-section">
+        <h3>Network Configuration</h3>
+        <div id="network-configs"></div>
+      </section>
+
+      <!-- Submit -->
+      <section class="form-actions">
+        <button type="submit" class="btn-primary">Generate Naming Document</button>
+      </section>
+    </form>
+  </div>
+
+  <script src="naming-logic.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

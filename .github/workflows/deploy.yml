@@ -41,6 +41,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
+      - name: Sanitize Docker Hub Username
+        id: sanitize
+        run: echo "username=$(echo '${{ secrets.DOCKER_HUB_USERNAME }}' | xargs)" >> $GITHUB_OUTPUT
+
       - name: 'Configure Azure App Service for Containers'
         uses: azure/appservice-settings@v1
         with:

@@ -183,8 +183,8 @@ app.post('/api/generate', async (req, res) => {
         let addedNamingRows = 0;
 
         envResources.forEach((res) => {
-          const rg = NamingLogic.generateResourceGroup(project, env, envRegion);
-          const resourceName = NamingLogic.generateResourceName(res.type, res.name, project, env, envRegion, res.instance);
+          const rg = res.manualRG || NamingLogic.generateResourceGroup(project, env, envRegion);
+          const resourceName = res.manualName || NamingLogic.generateResourceName(res.type, res.name, project, env, envRegion, res.instance);
           
           const row = namingSheet.addRow({
             type: res.type,

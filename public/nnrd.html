@@ -4,38 +4,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NNRD Generator</title>
+  <title>NNRD Generator | Enterprise Suite</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <nav class="navbar" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(99, 102, 241, 0.2); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; margin: -2rem -2rem 2rem -2rem;">
-    <a href="/" style="text-decoration: none; color: #6366f1; font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px"><path d="M15 18l-6-6 6-6"/></svg>
-      Back to Home
+  <nav class="navbar" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(79, 70, 229, 0.1); padding: 1.25rem 2.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;">
+    <a href="/" style="text-decoration: none; color: var(--primary); font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 0.75rem; transition: var(--transition);">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Portal Home
     </a>
-    <div style="font-weight: 600; color: #64748b;">NNRD Generator</div>
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--text-muted); background: rgba(0,0,0,0.03); padding: 6px 16px; border-radius: 20px; font-size: 0.9rem;">
+      <span style="width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block;"></span>
+      System Active
+    </div>
   </nav>
 
-  <div class="container" style="margin-top: 2rem;">
+  <div class="container">
     <header>
       <h1>NNRD Generator</h1>
-      <p>Generate standardized Azure naming documents</p>
+      <p>Enterprise Azure Naming & Documentation Engine</p>
     </header>
 
     <form id="nnrd-form">
       <!-- Project Details -->
       <section class="form-section">
-        <h3>Project Details</h3>
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="M3 9V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4"/><path d="M10 13h4"/></svg>
+          Project Parameters
+        </h3>
         <div class="form-grid">
           <div>
-            <label>Project Name:</label>
-            <input type="text" name="project" placeholder="Name" required />
+            <label>Project Identifier:</label>
+            <input type="text" name="project" placeholder="e.g. APPLAB" required />
           </div>
           <div>
             <label>Primary Region (PR):</label>
             <select name="region" required>
-              <option value="">Select Region</option>
+              <option value="">Select Target Region</option>
               <option value="Qatar Central">Qatar Central</option>
               <option value="Sweden Central">Sweden Central</option>
               <option value="West Europe">West Europe</option>
@@ -44,12 +50,12 @@
           </div>
           <div>
             <label>Disaster Recovery (DR):</label>
-            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-              <input type="checkbox" id="enable-dr" name="enable_dr" style="margin: 0; width: 14px; height: 14px;" />
-              <span style="font-size: 14px; font-weight: 500;">Enable DR</span>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+              <input type="checkbox" id="enable-dr" name="enable_dr" style="cursor: pointer;" />
+              <span style="font-size: 14px; font-weight: 600; color: var(--text-main);">Enable Secondary Region</span>
             </div>
             <select name="dr_region" id="dr-region" disabled>
-              <option value="">Select DR Region</option>
+              <option value="">Select DR Destination</option>
               <option value="Qatar Central">Qatar Central</option>
               <option value="Sweden Central">Sweden Central</option>
               <option value="West Europe">West Europe</option>
@@ -61,22 +67,28 @@
 
       <!-- Environment Selection -->
       <section class="form-section">
-        <h3>Select Environments</h3>
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M21 7 12 3 3 7l9 4 9-4z"/><path d="m3 12 9 4 9-4"/><path d="m3 17 9 4 9-4"/></svg>
+          Environments
+        </h3>
         <div class="checkbox-inline" id="env-checkboxes">
-          <label><input type="checkbox" name="environments" value="Hub" /> Hub</label>
-          <label><input type="checkbox" name="environments" value="Development" /> Development</label>
-          <label><input type="checkbox" name="environments" value="Staging" /> Staging</label>
-          <label><input type="checkbox" name="environments" value="Production" checked /> Production</label>
+          <label><input type="checkbox" name="environments" value="Hub" /> <span>Hub</span></label>
+          <label><input type="checkbox" name="environments" value="Development" /> <span>Development</span></label>
+          <label><input type="checkbox" name="environments" value="Staging" /> <span>Staging</span></label>
+          <label><input type="checkbox" name="environments" value="Production" checked /> <span>Production</span></label>
         </div>
       </section>
 
       <!-- Select Spoke Resources -->
       <section class="form-section">
-        <h3>Select Spoke Resources (Dev, Stg, Prod)</h3>
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 21v-2"/><path d="M12 13V5"/><path d="M12 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 13c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Z"/></svg>
+          Workload Resources (Spoke)
+        </h3>
         <div class="resource-selection">
           <div class="resource-picker">
             <select id="spoke-resource-type-select" class="resource-dropdown">
-              <option value="">-- Select Resource Type --</option>
+              <option value="">-- Resource Type --</option>
               <optgroup label="Compute">
                 <option value="Virtual Machine">Virtual Machine</option>
                 <option value="VM Jump Server">VM Jump Server</option>
@@ -136,9 +148,9 @@
                 <option value="Azure Monitor">Azure Monitor</option>
               </optgroup>
             </select>
-            <input type="text" id="spoke-resource-name-input" class="resource-name-input" placeholder="e.g., frontend, backend" />
-            <input type="number" id="spoke-resource-qty-input" class="resource-qty-input" placeholder="Qty" value="1" min="1" max="10" />
-            <button type="button" id="add-spoke-resource-btn" class="btn-secondary">+ Add Resource</button>
+            <input type="text" id="spoke-resource-name-input" class="resource-name-input" placeholder="Name (Identifier)" />
+            <input type="number" id="spoke-resource-qty-input" class="resource-qty-input" value="1" min="1" max="10" />
+            <button type="button" id="add-spoke-resource-btn" class="btn-secondary">Add to List</button>
           </div>
         </div>
         <div id="selected-spoke-resources" class="selected-resources-list"></div>
@@ -146,11 +158,14 @@
 
       <!-- Select Hub Resources -->
       <section class="form-section">
-        <h3>Select Hub Resources</h3>
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+          Shared Services (Hub)
+        </h3>
         <div class="resource-selection">
           <div class="resource-picker">
             <select id="hub-resource-type-select" class="resource-dropdown">
-              <option value="">-- Select Hub Resource --</option>
+              <option value="">-- Infrastructure Service --</option>
               <option value="Virtual Machine">Virtual Machine</option>
               <option value="Azure Container Registry">Azure Container Registry</option>
               <option value="Key Vault">Key Vault</option>
@@ -160,9 +175,9 @@
               <option value="Log Analytics Workspace">Log Analytics Workspace</option>
               <option value="Bastion">Azure Bastion</option>
             </select>
-            <input type="text" id="hub-resource-name-input" class="resource-name-input" placeholder="e.g., shared, proxy" />
-            <input type="number" id="hub-resource-qty-input" class="resource-qty-input" placeholder="Qty" value="1" min="1" max="10" />
-            <button type="button" id="add-hub-resource-btn" class="btn-secondary">+ Add Resource</button>
+            <input type="text" id="hub-resource-name-input" class="resource-name-input" placeholder="Shared usage name" />
+            <input type="number" id="hub-resource-qty-input" class="resource-qty-input" value="1" min="1" max="10" />
+            <button type="button" id="add-hub-resource-btn" class="btn-secondary">Add to Hub</button>
           </div>
         </div>
         <div id="selected-hub-resources" class="selected-resources-list"></div>
@@ -170,20 +185,23 @@
 
       <!-- Naming Convention Preview -->
       <section class="form-section">
-        <h3>Naming Convention Preview</h3>
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          Review & Customize
+        </h3>
         <div class="preview-table-wrapper">
           <table class="preview-table" id="preview-table">
             <thead>
               <tr>
-                <th>Resource Type</th>
+                <th>Type</th>
                 <th>Resource Group</th>
-                <th>Environment</th>
+                <th>Env</th>
                 <th>Resource Name</th>
               </tr>
             </thead>
             <tbody id="preview-tbody">
               <tr>
-                <td colspan="4" class="empty">Select resources to preview naming</td>
+                <td colspan="4" class="empty">Populate resources to initialize preview</td>
               </tr>
             </tbody>
           </table>
@@ -192,13 +210,19 @@
 
       <!-- Network Configuration per Environment -->
       <section class="form-section">
-        <h3>Network Configuration</h3>
+        <h3>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary);"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 7h.01"/><path d="M12 7h.01"/><path d="M17 7h.01"/><path d="M7 12h.01"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 17h.01"/><path d="M12 17h.01"/><path d="M17 17h.01"/></svg>
+          Connectivity & Subnets
+        </h3>
         <div id="network-configs"></div>
       </section>
 
       <!-- Submit -->
-      <section class="form-actions">
-        <button type="submit" class="btn-primary">Generate Naming Document</button>
+      <section class="form-actions" style="margin-bottom: 50px;">
+        <button type="submit" class="btn-primary" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg>
+          Generate NNRD Documentation
+        </button>
       </section>
     </form>
   </div>

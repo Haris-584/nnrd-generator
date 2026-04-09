@@ -59,6 +59,7 @@ function setupSearchableSelect(selectId) {
 
     if (filtered.length === 0) {
       dropdown.style.display = 'none';
+      container.closest('.form-section')?.classList.remove('has-open-dropdown');
       return;
     }
 
@@ -73,29 +74,57 @@ function setupSearchableSelect(selectId) {
         createItem(item);
       }
     });
+    
     dropdown.style.display = 'block';
+    container.closest('.form-section')?.classList.add('has-open-dropdown');
+
+    // Scroll selected item into view if it exists
+    const selected = dropdown.querySelector('.combo-box-item.selected');
+    if (selected) {
+      selected.scrollIntoView({ block: 'nearest' });
+    }
   };
 
   const createItem = (item) => {
     const div = document.createElement('div');
     div.className = 'combo-box-item';
+    if (select.value === item.value) {
+      div.classList.add('selected');
+    }
     div.textContent = item.text;
-    div.addEventListener('click', () => {
+    div.addEventListener('click', (e) => {
+      e.stopPropagation();
       input.value = item.text;
       select.value = item.value;
       dropdown.style.display = 'none';
+      container.closest('.form-section')?.classList.remove('has-open-dropdown');
       select.dispatchEvent(new Event('change'));
     });
     dropdown.appendChild(div);
   };
 
-  input.addEventListener('focus', () => renderDropdown(input.value));
-  input.addEventListener('input', () => renderDropdown(input.value));
+  // Focus and Click handlers
+  input.addEventListener('focus', () => {
+    input.select();
+    renderDropdown(''); // Always show all on focus
+  });
+
+  input.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (dropdown.style.display !== 'block') {
+      renderDropdown('');
+    }
+  });
+
+  input.addEventListener('input', () => {
+    renderDropdown(input.value);
+  });
 
   // Global click to close
   document.addEventListener('mousedown', (e) => {
     if (!container.contains(e.target)) {
       dropdown.style.display = 'none';
+      container.closest('.form-section')?.classList.remove('has-open-dropdown');
     }
   });
 
@@ -104,6 +133,7 @@ function setupSearchableSelect(selectId) {
     input.value = '';
     select.value = '';
     dropdown.style.display = 'none';
+    container.closest('.form-section')?.classList.remove('has-open-dropdown');
   };
 }
 
@@ -436,6 +466,9 @@ function renderSelectedResources() {
   envs.forEach(env => enforceRequiredSubnets(env));
 }
 
+// Global state for manual overrides
+let manualOverrides = {};
+
 function updatePreviewTable() {
   const project = document.querySelector('input[name="project"]').value || 'proj';
   const envs = getSelectedEnvironments();
@@ -475,18 +508,43 @@ function updatePreviewTable() {
         envRow.innerHTML = `<td colspan="4" style="background: #e0e7ff; color: var(--primary); font-weight: 600; text-align: center;">${env}</td>`;
         previewTable.appendChild(envRow);
 
-        activeResources.forEach((res) => {
+        activeResources.forEach((res, resIdx) => {
           for (let i = 1; i <= res.qty; i++) {
             const row = document.createElement('tr');
-            const resourceGroup = NamingLogic.generateResourceGroup(project, env, region);
-            const resourceName = NamingLogic.generateResourceName(res.type, res.name, project, env, region, i);
+            const defaultRG = NamingLogic.generateResourceGroup(project, env, region);
+            const defaultName = NamingLogic.generateResourceName(res.type, res.name, project, env, region, i);
             
+            // Unified override key logic
+            const overrideKey = `${env.trim()}_${res.type.trim()}_${resIdx}_${i}`;
+            const currentRG = manualOverrides[overrideKey]?.rg || defaultRG;
+            const currentName = manualOverrides[overrideKey]?.name || defaultName;
+
+            row.classList.add('naming-row');
+            row.dataset.env = env;
+            row.dataset.resType = res.type;
+            row.dataset.instance = i;
+
             row.innerHTML = `
               <td>${res.type}</td>
-              <td style="font-family: monospace; color: var(--text-muted);">${resourceGroup}</td>
+              <td class="editable-rg" contenteditable="true" style="font-family: monospace; color: var(--text-muted);">${currentRG}</td>
               <td style="font-weight: 500;">${env}</td>
-              <td style="font-family: monospace; font-weight: 600; color: var(--primary-hover);">${resourceName}</td>
+              <td class="editable-name" contenteditable="true" style="font-family: monospace; font-weight: 600; color: var(--primary-hover);">${currentName}</td>
             `;
+
+            // Keep manualOverrides updated for persistence during re-renders
+            const rgCell = row.querySelector('.editable-rg');
+            const nameCell = row.querySelector('.editable-name');
+
+            const saveEdit = () => {
+              manualOverrides[overrideKey] = {
+                rg: (rgCell.innerText || rgCell.textContent || '').trim(),
+                name: (nameCell.innerText || nameCell.textContent || '').trim()
+              };
+            };
+
+            rgCell.addEventListener('input', saveEdit);
+            nameCell.addEventListener('input', saveEdit);
+            
             previewTable.appendChild(row);
           }
         });
@@ -520,19 +578,24 @@ form.addEventListener('submit', async (event) => {
   const formData = new FormData(form);
   const envs = getSelectedEnvironments();
   
-  // Build resources dynamically based on Spoke / Hub env
+  // Build resources using the EXACT SAME looping logic as updatePreviewTable
   const envResources = {};
   envs.forEach((env) => {
     envResources[env] = [];
     const isHub = env.toLowerCase().includes('hub');
     const activeResources = isHub ? selectedHubResources : selectedSpokeResources;
 
-    activeResources.forEach((res) => {
+    activeResources.forEach((res, resIdx) => {
       for (let i = 1; i <= res.qty; i++) {
+        const overrideKey = `${env.trim()}_${res.type.trim()}_${resIdx}_${i}`;
+        const override = manualOverrides[overrideKey];
+
         envResources[env].push({
           type: res.type,
           name: res.name,
           instance: i,
+          manualName: override?.name || null,
+          manualRG: override?.rg || null
         });
       }
     });

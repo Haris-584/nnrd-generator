@@ -9,48 +9,107 @@ let selectedSpokeResources = [];
 let selectedHubResources = [];
 const networkConfigs = {};
 
-// --- Searchable Dropdown Logic ---
-function setupSearch(searchId, selectId) {
-  const searchInput = document.getElementById(searchId);
+// --- Integrated Searchable Select ---
+function setupSearchableSelect(selectId) {
   const select = document.getElementById(selectId);
-  if (!searchInput || !select) return;
+  if (!select) return;
 
-  const originalOptions = Array.from(select.querySelectorAll('option, optgroup')).map(node => node.cloneNode(true));
+  const container = document.createElement('div');
+  container.className = 'combo-box-container';
+  select.parentNode.insertBefore(container, select);
+  
+  const input = document.createElement('input');
+  input.className = 'combo-box-input';
+  input.placeholder = select.options[0].textContent;
+  input.type = 'text';
+  input.autocomplete = 'off';
+  
+  const dropdown = document.createElement('div');
+  dropdown.className = 'combo-box-dropdown';
+  
+  container.appendChild(input);
+  container.appendChild(dropdown);
+  container.appendChild(select);
+  select.style.display = 'none';
 
-  searchInput.addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase().trim();
-    select.innerHTML = '';
-    
-    if (!term) {
-      originalOptions.forEach(opt => select.appendChild(opt.cloneNode(true)));
+  // Extract data once
+  const items = Array.from(select.querySelectorAll('optgroup, option')).map(node => {
+     if (node.tagName === 'OPTGROUP') {
+       return { 
+         type: 'group', 
+         label: node.label, 
+         options: Array.from(node.querySelectorAll('option')).map(o => ({ text: o.textContent, value: o.value })) 
+       };
+     }
+     if (node.parentNode.tagName !== 'OPTGROUP' && node.value) {
+       return { type: 'option', text: node.textContent, value: node.value };
+     }
+     return null;
+  }).filter(n => n);
+
+  const renderDropdown = (term = '') => {
+    dropdown.innerHTML = '';
+    const filtered = items.map(item => {
+      if (item.type === 'group') {
+        const matching = item.options.filter(o => o.text.toLowerCase().includes(term.toLowerCase()));
+        return matching.length > 0 ? { ...item, options: matching } : null;
+      }
+      return item.text.toLowerCase().includes(term.toLowerCase()) ? item : null;
+    }).filter(n => n);
+
+    if (filtered.length === 0) {
+      dropdown.style.display = 'none';
       return;
     }
 
-    originalOptions.forEach(node => {
-      if (node.tagName === 'OPTGROUP') {
-        const groupOptions = Array.from(node.querySelectorAll('option'));
-        const filteredGroupOptions = groupOptions.filter(opt => 
-          opt.textContent.toLowerCase().includes(term) || node.label.toLowerCase().includes(term)
-        );
-
-        if (filteredGroupOptions.length > 0) {
-          const newGroup = document.createElement('optgroup');
-          newGroup.label = node.label;
-          filteredGroupOptions.forEach(opt => newGroup.appendChild(opt.cloneNode(true)));
-          select.appendChild(newGroup);
-        }
-      } else if (node.tagName === 'OPTION') {
-        if (!node.value || node.textContent.toLowerCase().includes(term)) {
-          select.appendChild(node.cloneNode(true));
-        }
+    filtered.forEach(item => {
+      if (item.type === 'group') {
+        const header = document.createElement('div');
+        header.className = 'combo-box-group';
+        header.textContent = item.label;
+        dropdown.appendChild(header);
+        item.options.forEach(opt => createItem(opt));
+      } else {
+        createItem(item);
       }
     });
+    dropdown.style.display = 'block';
+  };
+
+  const createItem = (item) => {
+    const div = document.createElement('div');
+    div.className = 'combo-box-item';
+    div.textContent = item.text;
+    div.addEventListener('click', () => {
+      input.value = item.text;
+      select.value = item.value;
+      dropdown.style.display = 'none';
+      select.dispatchEvent(new Event('change'));
+    });
+    dropdown.appendChild(div);
+  };
+
+  input.addEventListener('focus', () => renderDropdown(input.value));
+  input.addEventListener('input', () => renderDropdown(input.value));
+
+  // Global click to close
+  document.addEventListener('mousedown', (e) => {
+    if (!container.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
   });
+
+  // Reset function to be called after adding a resource
+  select.resetCustom = () => {
+    input.value = '';
+    select.value = '';
+    dropdown.style.display = 'none';
+  };
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-    setupSearch('spoke-resource-search', 'spoke-resource-type-select');
-    setupSearch('hub-resource-search', 'hub-resource-type-select');
+  setupSearchableSelect('spoke-resource-type-select');
+  setupSearchableSelect('hub-resource-type-select');
 });
 
 // Handle environment selection changes
@@ -301,7 +360,8 @@ addSpokeResourceBtn.addEventListener('click', () => {
   }
   
   selectedSpokeResources.push({ type, name, qty });
-  spokeResourceTypeSelect.value = '';
+  if (spokeResourceTypeSelect.resetCustom) spokeResourceTypeSelect.resetCustom();
+  else spokeResourceTypeSelect.value = '';
   spokeResourceNameInput.value = '';
   spokeResourceQtyInput.value = '1';
   renderSelectedResources();
@@ -329,7 +389,8 @@ addHubResourceBtn.addEventListener('click', () => {
   }
   
   selectedHubResources.push({ type, name, qty });
-  hubResourceTypeSelect.value = '';
+  if (hubResourceTypeSelect.resetCustom) hubResourceTypeSelect.resetCustom();
+  else hubResourceTypeSelect.value = '';
   hubResourceNameInput.value = '';
   hubResourceQtyInput.value = '1';
   renderSelectedResources();
